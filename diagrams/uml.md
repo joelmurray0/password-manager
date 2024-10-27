@@ -8,32 +8,33 @@ classDiagram
     }
 
     class UserAccount {
-        - username : String
+        - username : string
         - password : EncryptedPassword
-        - passwordStrength : String
-        + changePassword(newPassword: String) : void
-        + checkPasswordStrength(password: String) : String
-        + encryptPassword(password: String) : String
-        + decryptPassword(encryptedPassword: String) : String
+        - passwordStrength : string
+        + changePassword(newPassword: string) : void
+        + checkPasswordStrength(password: string) : string
+        + encryptPassword(password: string) : string
+        + decryptPassword(encryptedPassword: string) : string
     }
 
     class EncryptedPassword {
-        - encryptedData : String
-        - encryptionMethod : String
+        - encryptedData : string
+        - encryptionMethod : string
         
     }
 
     class PasswordGenerator {
-        + generateStrongPassword(length: int) : String
+        + generateStrongPassword(length: int) : string
     }
 
     class PasswordChecker {
-        + checkPassword(password: String) : bool
+        - vulnerablePasswords: list<string>
+        + checkPassword(password: string) : bool
     }
 
     class EncryptionMethod {
-        + encrypt(password: String) : String
-        + decrypt() : String
+        + encrypt(password: string) : string
+        + decrypt() : string
     }
 
     Users "1" --> "0..*" UserAccount 
