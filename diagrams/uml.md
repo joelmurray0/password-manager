@@ -28,7 +28,7 @@ classDiagram
     }
 
     class PasswordChecker {
-        - vulnerablePasswords: list<string>
+        - vulnerablePasswords: list~string~
         + checkPassword(password: string) : bool
     }
 
