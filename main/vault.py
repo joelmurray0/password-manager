@@ -3,8 +3,8 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 import os
 import json
-from vaultItem import VaultItem
-from key import Key
+from .vaultItem import VaultItem
+from .key import Key
 
 class Vault:
      def __init__(self, key):
@@ -63,17 +63,16 @@ class Vault:
 
           return data
      
-     def write_to_file(self):
+     def write_to_vault(self):
           data = ''
           for i in vault.items.values():
                data += json.dumps(i.__dict__)
-          
-          print(data)
+
           ciphertext = self.encrypt_data(data.encode())
           with open(f"{self._key.vault_name}.txt", "wb") as f:
                f.write(ciphertext)
           
-     def read_from_file(self):
+     def read_from_vault(self):
           with open(f"{self._key.vault_name}.txt", "rb") as f:
                ciphertext = f.read()
                print(ciphertext)
@@ -97,11 +96,11 @@ item2 = VaultItem("bing.com", "jim", "supersecret", "cat")
 vault.add_item(item)
 vault.add_item(item2)
 #print(vault.items)
-vault.write_to_file()
+vault.write_to_vault()
 print()
 print(vault.items)
 print()
-print(vault.read_from_file())
+print(vault.read_from_vault())
 
 # Write object to a text file as JSON
 
@@ -112,3 +111,8 @@ print(vault.read_from_file())
 
 #vault.add_item(item)
 #vault.items_json()
+
+
+
+
+# new idea: master password is made into key which decrypts the key in each password object - which decodes the password

@@ -1,21 +1,20 @@
 import pytest
 from main.vault import Vault
-from main.vaultItem import VaultItem
-
+from main.key import Key
 
 def test_create_vault():
      vault = Vault('name')
 
-     assert vault.name == 'name'
+     assert vault._key == 'name'
      assert vault.items == {}
      assert isinstance(vault, Vault)
 
-def test_add_item():
-     vault = Vault('name')
-     vault_item = VaultItem()
+#def test_write_to_vault()
 
-     vault.add_item("item")
-     assert vault.items == {}
-
-     vault.add_item(vault_item)
-     assert vault.items == {vault_item._key: vault_item}
+def test_encrypt():
+     key = Key("key", "name")
+     vault = Vault(key)
+     plaintext = b"sample"
+     ciphertext = vault.encrypt_data(plaintext)
+     assert ciphertext != plaintext 
+     assert vault.decrypt_data(ciphertext) == plaintext
