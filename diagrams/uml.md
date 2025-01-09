@@ -1,13 +1,13 @@
 ```mermaid
 classDiagram
-    class Users {
-        - userAccounts : List~UserAccount~
-        + addUserAccount(account: UserAccount) : void
-        + removeUserAccount(account: UserAccount) : void
+    class KeyManager {
+        - Key : Dict~Key~
+        + addKey(account: UserAccount) : void
+        + removeKey(account: UserAccount) : void
         
     }
 
-    class UserAccount {
+    class Key {
         - username : string
         - password : EncryptedPassword
         - passwordStrength : string
@@ -16,6 +16,9 @@ classDiagram
         + encryptPassword(password: string) : string
         + decryptPassword(encryptedPassword: string) : string
     }
+
+    class Vault {
+        - 
 
     class EncryptedPassword {
         - encryptedData : string
