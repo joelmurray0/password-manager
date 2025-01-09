@@ -9,24 +9,28 @@ classDiagram
 
     class Key {
         - username : string
-        - password : EncryptedPassword
-        - passwordStrength : string
-        + changePassword(newPassword: string) : void
-        + checkPasswordStrength(password: string) : string
-        + encryptPassword(password: string) : string
-        + decryptPassword(encryptedPassword: string) : string
+        - master_password : string
     }
 
     class Vault {
-        - 
+        - key : Key
+        - items : List
+        + add_item(new_item: vaultItem) : void
+        + delete_item(item: vaultItem) : void
+        + edit_item(item: vaultItem) : void
+    }
 
-    class EncryptedPassword {
-        - encryptedData : string
-        - encryptionMethod : string
-        
+    class vaultItem {
+        - username : string
+        - password : string
+        - key : string
+        - url : string
+        + encrypt_item(master_password: Key) : void
+        + decrypt_item(master_password: Key) : void
     }
 
     class PasswordGenerator {
+        + character_requirements : list
         + generateStrongPassword(length: int) : string
     }
 
@@ -35,13 +39,15 @@ classDiagram
         + checkPassword(password: string) : bool
     }
 
-    class EncryptionMethod {
+    class Encryption {
         + encrypt(password: string) : string
-        + decrypt() : string
+        + decrypt(ciphertext: string) : string
     }
 
-    Users "1" --> "0..*" UserAccount 
-    UserAccount "1" *-- "0..*" EncryptedPassword 
-    UserAccount "1" *-- "1" PasswordGenerator
-    UserAccount "1" o-- "1" PasswordChecker
-    UserAccount "1" *-- "1" EncryptionMethod 
+    Vault "1" *-- "1" Key
+    KeyManager "1" *-- "0..*" Key
+    vaultItem  "1" --> "1" PasswordChecker
+    vaultItem  "1" --> "1" PasswordGenerator
+    Vault "1" *-- "0..*" vaultItem
+    Encryption "1" --> "1" Vault
+    Encryption "1" --> "1" vaultItem
