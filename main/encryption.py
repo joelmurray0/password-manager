@@ -1,5 +1,5 @@
 import os
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives import padding, hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
@@ -8,10 +8,7 @@ class Encryption:
           # Pad the data to ensure it is a multiple of AES's block size (128 bits / 16 bytes)
           padder = padding.PKCS7(algorithms.AES.block_size).padder()
           padded_data = padder.update(data) + padder.finalize()
-
-          # Generate a random IV (Initialization Vector)
           
-
           # Create a Cipher object using AES and CBC mode
           cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
           encryptor = cipher.encryptor()
@@ -40,5 +37,10 @@ class Encryption:
 
           return data
      
-cipher = Encryption()
-print(cipher.aes_encrypt_data(b"00000000000000000000000000000000", b"6a84867cd77e12ad07ea1be895c53fa3", b"0000000000000000"))
+     def hash(self, data):
+          digest = hashes.Hash(hashes.SHA256())
+          digest.update(data)
+
+          # Compute the full hash and truncate it to 16 bytes
+          full_hash = digest.finalize()
+          return full_hash[:16]

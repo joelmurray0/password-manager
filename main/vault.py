@@ -5,11 +5,14 @@ import os
 import json
 from .vaultItem import VaultItem
 from .key import Key
+from encryption import Encryption
 
 class Vault:
      def __init__(self, key):
           self._key = key
           self.items = {}
+          self.encryption = Encryption()
+          self.hash_map = []
 
      def add_item(self, vault_item):
           # check for actual vault item
@@ -17,51 +20,42 @@ class Vault:
                raise TypeError
           # add to dict
           self.items[vault_item._url] = vault_item
-
+          self.add_to_hash_map(vault_item)
 
      def remove_item(self, vault_item):
           if isinstance(vault_item, VaultItem):
-               self.items[vault_item._url] = None
+               self.items[vault_item.url] = None
+     
+     def add_to_hash_map(self):
+          #hash_value 
+          pass
+
+     def write_vault_item_to_file(self, vault_item, password):
+          vault_item.lock_vaultItem(password)
+          with open(f'{self._key.name}.txt', 'w') as file:
+               items = vault_item.reveal_items()
+               file.write(f'{items[0]}\n{items[1]}\n{items[2]}\n{items[3]}') # writes url usr password and key in that order with usr and password encrypted
+
+     def write_all_vault_items_to_file(self, password):
+          counter = 1
+          for vault_item in self.items.values():
+               counter += 1
+               vault_item.lock_vaultItem(password)
+               hash_map.append([self.encryption.hash(vault_item.url), counter])
+
+          with open(f'{self._key.name}.txt', 'w') as file:
+               # write hash map line
+
+               items = vault_item.reveal_items()
+               
+               file.write(f'{items[0]}\n{items[1]}\n{items[2]}\n{items[3]}') # writes url usr password and key in that order with usr and password encrypted
+
+     def write_hash_map(self):
+          for 
 
      def items_json(self):
           with open('data.json', 'w') as file:
                json.dump(self.items, file)
-
-     def encrypt_data(self, data):
-          # Pad the data to ensure it is a multiple of AES's block size (128 bits / 16 bytes)
-          padder = padding.PKCS7(algorithms.AES.block_size).padder()
-          padded_data = padder.update(data) + padder.finalize()
-
-          # Generate a random IV (Initialization Vector)
-          iv = os.urandom(16)
-
-          # Create a Cipher object using AES and CBC mode
-          cipher = Cipher(algorithms.AES(self._key._key), modes.CBC(iv), backend=default_backend())
-          encryptor = cipher.encryptor()
-
-          # Encrypt the padded data
-          encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
-
-          # Return the IV concatenated with the encrypted data
-          return iv + encrypted_data
-
-     def decrypt_data(self, ciphertext):
-          # Extract the IV from the beginning of the ciphertext
-          iv = ciphertext[:16]
-          actual_ciphertext = ciphertext[16:]
-
-          # Create a Cipher object using AES and CBC mode
-          cipher = Cipher(algorithms.AES(self._key._key), modes.CBC(iv), backend=default_backend())
-          decryptor = cipher.decryptor()
-
-          # Decrypt the ciphertext
-          padded_data = decryptor.update(actual_ciphertext) + decryptor.finalize()
-
-          # Unpad the decrypted data
-          unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
-          data = unpadder.update(padded_data) + unpadder.finalize()
-
-          return data
      
      def write_to_vault(self):
           data = ''
