@@ -51,3 +51,4 @@ classDiagram
     Vault "1" *-- "0..*" vaultItem
     Encryption "1" --> "1" Vault
     Encryption "1" --> "1" vaultItem
+    Key "1" *-- "1" vaultItem
