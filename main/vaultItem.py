@@ -1,40 +1,39 @@
-from encryption import Encryption
-from key import Key
+from encryption import aes_decrypt_data, aes_encrypt_data, hash
+from key import derive_key
+import os
+import base64
 
 class VaultItem:
-     def __init__(self, url, username, password, key):
+     def __init__(self, master_password, url, username, password):
           self.url = url
-          self._usr = username
-          self._password = password
-          self._key = key
-          self.encryption = Encryption()
-          self.combin_key = Key("unlock")
-          self.is_locked = False
+          self._put(master_password, url, username, password)
 
-     def reveal_items(self):
-          return [self.url, self._usr.decode('utf-8', errors='ignore'), self._password.decode('utf-8', errors='ignore'), self._key]
-
-     def lock_vaultItem(self, master_password):
+     def _put(self, master_password, url, username, password):
           # plain key is derived from the website, master password, and account specific key
           # encrypt username and password
-          
-          iv = self.encryption.hash(self.url.encode())
-          self._usr = self.encryption.aes_encrypt_data(self.combin_key.derive_key(master_password + self._key), self._usr.encode(), iv)
-          self._password = self.encryption.aes_encrypt_data(self.combin_key.derive_key(master_password + self._key), self._password.encode(), iv)
-          self.is_locked = True
+          iv = hash(self.url.encode())
+          self._key = os.urandom(16)
 
-     def unlock_vaultItem(self, master_password):
-          # encrypt username and password
-          self._usr = self.encryption.aes_decrypt_data(self.combin_key.derive_key(master_password + self._key), self._usr)
-          self._password = self.encryption.aes_decrypt_data(self.combin_key.derive_key(master_password + self._key), self._password)
-          self.is_locked = False
+          self._username = base64.b64encode(aes_encrypt_data(derive_key(self._key, url), username.encode(), iv))
+          self._password = base64.b64encode(aes_encrypt_data(derive_key(self._key, url), password.encode(), iv))
+          self._key = base64.b64encode(aes_encrypt_data(derive_key(master_password.encode(), url), self._key, iv))
+
+     def get_username(self, master_password):
+          key = aes_decrypt_data(derive_key(master_password.encode(), self.url), base64.b64decode(self._key))
+
+          # decrypt username
+          return aes_decrypt_data(derive_key(key, self.url), base64.b64decode(self._username))
+
+     def get_password(self, master_password):
+          key = aes_decrypt_data(derive_key(master_password.encode(), self.url), base64.b64decode(self._key))
+
+          # decrypt password
+          return aes_decrypt_data(derive_key(key, self.url), base64.b64decode(self._password))
 
 
 
-# pass1 = VaultItem('google.com', 'plonker', 'secret', 'pass')
-# pass2 = VaultItem("twitter.com", "planks", "shush", "please")
+# pass1 = VaultItem('masta', 'google.com', 'plonker', 'secret')
+# # pass2 = VaultItem("twitter.com", "planks", "shush", "please")
 
-# pass1.lock_vaultItem("master")
-# print(pass1.reveal_items())
-# pass1.unlock_vaultItem("master")
-# print(pass1.reveal_items())
+# print(pass1.get_username("masta"))
+# print(pass1.get_password("masta"))
