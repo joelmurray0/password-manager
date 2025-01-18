@@ -10,7 +10,10 @@ erDiagram
     }
 
     ENCRYPTED_PASSWORD {
-     string encryptedData
+     string encryptedUsername
+     string encryptedPassword
+     string url
+     string password_key
     }
 
      DATABASE{
