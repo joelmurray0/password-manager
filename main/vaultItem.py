@@ -29,11 +29,3 @@ class VaultItem:
 
           # decrypt password
           return aes_decrypt_data(derive_key(key, self.url), base64.b64decode(self._password))
-
-
-
-# pass1 = VaultItem('masta', 'google.com', 'plonker', 'secret')
-# # pass2 = VaultItem("twitter.com", "planks", "shush", "please")
-
-# print(pass1.get_username("masta"))
-# print(pass1.get_password("masta"))
