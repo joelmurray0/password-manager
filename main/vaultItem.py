@@ -19,13 +19,16 @@ class VaultItem:
           self._key = base64.b64encode(aes_encrypt_data(derive_key(master_password.encode(), url), self._key, iv))
 
      def get_username(self, master_password):
-          key = aes_decrypt_data(derive_key(master_password.encode(), self.url), base64.b64decode(self._key))
+          key = aes_decrypt_data(derive_key(master_password.encode(), self.url), self.encode_key())
 
           # decrypt username
           return aes_decrypt_data(derive_key(key, self.url), base64.b64decode(self._username))
 
      def get_password(self, master_password):
-          key = aes_decrypt_data(derive_key(master_password.encode(), self.url), base64.b64decode(self._key))
+          key = aes_decrypt_data(derive_key(master_password.encode(), self.url), self.encode_key())
 
           # decrypt password
           return aes_decrypt_data(derive_key(key, self.url), base64.b64decode(self._password))
+     
+     def encode_key(self):
+          return base64.b64decode(self._key)

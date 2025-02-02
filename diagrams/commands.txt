@@ -1,0 +1,11 @@
+--create <name> <master password> --> create a new vault
+
+--add <website> <username> <password> - must be in a vault
+
+--remove <website> <username> - must be in a vault
+
+--edit <website> <username> - must be in a vault
+
+--view <website> <username> <master password>
+
+--login <name> <master password>
