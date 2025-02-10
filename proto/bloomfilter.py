@@ -6,7 +6,7 @@ class BloomFilter():
           self.size = size
           self.filter = np.zeros(self.size)
           self.hash1 = hash1
-          self.hash2 = hash2
+          self.hash2 = hash2\
      
      def find_hash_index(self, data):
           # Turns string into bytes

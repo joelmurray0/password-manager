@@ -1,58 +1,19 @@
-# import os
-# from vaultItem import VaultItem
-# from encryption import Encryption
-# from key import Key
-# from vault import Vault
-
-# while __name__ == "__main__":
-#      encryption = Encryption()
-#      master_key = Key("joel")
-#      vault = Vault(master_key)
-#      # object of a vault - add remove edit show functions
-#      # dont care about input validation for this as not problem in finished code
-#      master_pass_hash = master_key.derive_key(input("Enter your master password"))
-#      func = int(input("1. Add \n2. Return \n3. Delete \n4. Edit \n5. Exit"))
-#      if func == 1:
-#           usr = input("please enter username")
-#           password = input("please enter password")
-#           url = input("what is the url of the website this account is for?")
-#           item = VaultItem(url, usr, password, os.urandom(16))
-#           vault.add_item(item)
-#      elif func == 2:
-#           url = input("what is the url of the website this account is for?")
-#      elif func == 3:
-#           url = input("what is the url of the website this account is for?")
-#      elif func == 4:
-#           url = input("what is the url of the website this account is for?")
-#      elif func == 5:
-#           # shut down methods
-#           # write_all_to_file() --> lock all items --> write to txt file 
-
-
 import argparse
 from vault import Vault
 from vaultItem import VaultItem
+from generatepassword import make_password
 
-def greet(name, uppercase):
-     message = f"Hello, {name}!"
-     if uppercase:
-          message = message.upper()
-     print(message)
+def create_vault(name, master_password):
+     return Vault.get_vault(name, master_password)
 
-def create_vault(name):
-     return Vault.get_vault(name)
-
-def add_to_vault(name, username, password, url, master_password):
-     vault = create_vault(name)
+def add_to_vault(vault, username, password, url, master_password):
      vault_item = VaultItem(master_password, url, username, password)
-     vault.add_item(vault_item)
+     vault.add_item(vault_item, master_password)
 
-def remove_from_vault(name, url):
-     vault = create_vault(name)
-     vault.remove_item(url)
+def remove_from_vault(vault, id):
+     vault.remove_item(int(id))
 
-def view_from_vault(name, url, master_password):
-     vault = create_vault(name)
+def view_from_vault(vault, url, master_password):
      item = vault.get_item(url)
      try:
           print(item.get_username(master_password).decode())
@@ -60,49 +21,52 @@ def view_from_vault(name, url, master_password):
      except Exception:
           print("Invalid url")
 
-
 if __name__ == "__main__":
      parser = argparse.ArgumentParser(description="Password Manager CLI")
-     # subparsers = parser.add_subparsers(dest="command")
 
-     # Add password command
-     # paser = subparsers.paser("add", help="Add a new account and password")
-     parser.add_argument("--create", help="Creates a vault given a username.")
-     #parser.add_argument("--login", help="logs in to a vault given a username and password.")
-     parser.add_argument("--add", nargs=5, help="adds a password given the vault details")
-     parser.add_argument("--remove", nargs=2, help="removes a password given the website and username.")
-     parser.add_argument("--view", nargs=3, help="view a password given the vault, website and master password.")
+     # Defines arguments that can be used with the CLI along with help descriptors
+     parser.add_argument("--create", nargs=2, help="Creates a vault given the vault name and master password. -- <name> <password>")
+     parser.add_argument("--add", nargs=5, help="adds a password given the vault details -- <name> <master password> <username> <password> <url>")
+     parser.add_argument("--remove", nargs=3, help="removes a password given the website and username. -- <name> <master password> <url>")
+     parser.add_argument("--view", nargs=3, help="view a password given the vault name, password and website. -- <name> <master password> <url>")
+     parser.add_argument("--add_generated", nargs=4, help="adds a generated password given the vault details -- <name> <master password> <username> <url>")
+     parser.add_argument("--list", nargs=2, help="Creates a vault given the vault name and master password. -- <name> <password>")
 
      args = parser.parse_args()
      if args.create:
-          vault = create_vault(args.create)
+          # Code to check the master password is correct
+          vault = create_vault(args.create[0], args.create[1])
+          if isinstance(vault, bool):
+               print(f"Incorrect master password for vault: {args.view[0]}")
      elif args.add:
-          add_to_vault(args.add[0], args.add[1], args.add[2], args.add[3], args.add[4])
+          vault = create_vault(args.add[0], args.add[1])
+          if isinstance(vault, bool):
+               print(f"Incorrect master password for vault: {args.view[0]}")
+          else:
+               add_to_vault(vault, args.add[2], args.add[3], args.add[4], args.add[1])
      elif args.remove:
-          remove_from_vault(args.remove[0], args.remove[1])
+          vault = create_vault(args.remove[0], args.remove[1])
+          if isinstance(vault, bool):
+               print(f"Incorrect master password for vault: {args.remove[0]}")
+          else:
+               remove_from_vault(vault, args.remove[2])
      elif args.view:
-          view_from_vault(args.view[0], args.view[1], args.view[2])
+          vault = create_vault(args.view[0], args.view[1])
+          if isinstance(vault, bool):
+               print(f"Incorrect master password for vault: {args.view[0]}")
+          else:
+               view_from_vault(vault, args.view[2], args.view[1])
+     elif args.add_generated:
+          vault = create_vault(args.add_generated[0], args.add_generated[1])
+          if isinstance(vault, bool):
+               print(f"Incorrect master password for vault: {args.view[0]}")
+          else:
+               add_to_vault(vault, args.add_generated[2], make_password(), args.add_generated[3], args.add_generated[1])
+     elif args.list:
+          vault = create_vault(args.list[0], args.list[1])
+          if isinstance(vault, bool):
+               print(f"Incorrect master password for vault: {args.view[0]}")
+          else:
+               vault.view_all(args.list[1])
      else:
           parser.print_help()
-
-     # never store master password
-
-
-
-# spam --create myvault
-#  -- check already exist
-# -- tell user created
-# -- wroye out file
-
-# spam --add myvault --url google,com --password cooking
-# name = input("Enter your new MP: ")
-#   -- fail is vault file not ecists
-#   -- add vaoult item + write FileNotFoundError
-#   -- tell user added itel
-
-# spam --get myvault --url google.com
-# name = input("Enter your new MP: ")
-#   -- fail is vault file not ecists
-#   -- print unencyrypetydf bits to user
-
-
