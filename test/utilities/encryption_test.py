@@ -1,4 +1,4 @@
-from main.encryption import aes_decrypt_data, aes_encrypt_data, hash
+from main.utilities.encryption import aes_decrypt_data, aes_encrypt_data, hash
 
 def test_aes_encrypt_data():
      ciphertext = aes_encrypt_data(b"0000000000000000", b"data")

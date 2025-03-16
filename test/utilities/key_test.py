@@ -1,4 +1,4 @@
-from main.key import derive_key
+from utilities.key import derive_key
 
 def test_derive_key():
      key_result = derive_key(b"password", "salt")
