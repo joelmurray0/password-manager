@@ -1,8 +1,35 @@
 import argparse
+import os
 from vault import Vault
 from vaultItem import VaultItem
 from utilities.generatepassword import make_password
 from bloomfilter import BloomFilter
+from cli import CLIManager
+
+class Spam:
+     def __init__(self):
+          pass
+
+     def list_vaults(self):
+          return os.listdir("vault")
+     
+     def get_vault(self, filename, password):
+          self.current_vault = Vault.get_vault(filename, password)
+          if self.current_vault == None:
+               return False
+          else:
+               self.master_password = password
+               return True
+     
+     def add_item(self, url, username, password):
+          vault_item = VaultItem(self.master_password, url, username, password)
+          self.current_vault.add_item(vault_item, self.master_password)
+     
+     def search(self, query):
+          self.current_vault.
+
+if __name__ == "__main__":
+     interface = CLIManager(Spam)
 
 def add_to_vault(vault, username, password, url, master_password, password_bloom_filter=BloomFilter.load("password_bloom_filter.pkl")):
      if not password_bloom_filter.__contains__(password):

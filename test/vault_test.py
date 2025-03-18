@@ -44,6 +44,18 @@ def test__save():
           content = file.read()
           assert isinstance(content, bytes)
           assert len(content) != 0
+
+def test_get_vault_can_also_load_pre_existing_vaults():
+     vault = Vault.get_vault(name="vault", master_password="master_password")
+     vault_item = VaultItem("master_password", "url", "username", "password")
+     id = vault_item.id
+     vault.add_item(vault_item, "master_password")
+     vault._save()
+
+     with open(os.path.join('vault', "vault.txt"), "rb") as file:
+          content = file.read()
+          assert isinstance(content, bytes)
+          assert len(content) != 0
      vault = Vault.get_vault(name="vault", master_password="master_password")
 
      assert list(vault.items.keys())[-1] == id # last element as previous tests take up other ids that aren't removed

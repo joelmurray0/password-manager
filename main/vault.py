@@ -35,10 +35,24 @@ class Vault:
                     if aes_encrypt_data(derive_key(master_password.encode(), name), b"valid", hash(name.encode())) == vault.check:
                          return vault
                     else:
-                         return False
+                         return None
           # If the file doesn't exist then create vault
           except Exception as e:
                return Vault(name, master_password)
+
+     @classmethod
+     def login(cls, name, master_password):
+          try:
+               with open(os.path.join('vault', f'{name}.txt'), 'rb') as file:
+                    vault = pickle.load(file)
+                    # Checks that the master password is the same as the one inputted without storing it
+                    if aes_encrypt_data(derive_key(master_password.encode(), name), b"valid", hash(name.encode())) == vault.check:
+                         return True
+                    else:
+                         return False
+          # If the file doesn't exist then create vault
+          except Exception as e:
+               return False
 
      def get_item(self, vault_item):
           try:
@@ -71,12 +85,14 @@ class Vault:
           except Exception as e:
                print("error - invalid item")
 
-     # user = vault_item.get_username(master_password).decode().lower().translate(str.maketrans('', '', string.punctuation))
-     # url = vault_item.url.lower().translate(str.maketrans('', '', string.punctuation))
+     def __getstate__(self):
+          state = self.__dict__.copy()
+          state["inverse_index"] = None  # Remove before pickling
+          return state
 
-     
-     # maybe instead of doing case sensetivity make all inputs lowercase
-     #def all_cases_tokens(self, str, id):
+     def __setstate__(self, state):
+          self.__dict__.update(state)
+          self.inverse_index = InverseIndex()  # Restore after unpickling
 
      def _save(self):
           folder = 'vault'
@@ -86,18 +102,5 @@ class Vault:
           with open(os.path.join(folder, f'{self.name}.txt'), 'wb') as file:
                pickle.dump(self, file)
 
-     # def search(self, query):
-     #      try:
-     #           pos = binary_search_arr2d(self._token_table, query)
-     #      except Exception as e:
-     #           return []
-     #      output = []
-     #      for i in set(self._token_table[pos][1]):
-     #           output.append(self.items[i])
-     #      return output
-
-# vault = Vault.get_vault(name="vault", master_password="master_password")
-# vault_item = VaultItem("master_password", "url", "username", "password")
-
-# vault.build_search(vault_item, "master_password")
-# vault.inverse_index.display()
+     def search(self): # write search for inverse index
+          pass

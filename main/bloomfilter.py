@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import hashlib
 import pickle
@@ -26,16 +27,20 @@ class BloomFilter:
         return self.contains(item)
     
     def save(self, filename: str):
-        with open(filename, 'wb') as f:
+        folder = "bloomfilter"
+        if not os.path.exists(folder):
+            os.makedirs(folder)  # Create the directory if it doesn't exist
+            
+        with open(os.path.join('bloomfilter', filename), 'wb') as f:
             pickle.dump(self, f)
     
     @staticmethod
     def load(filename: str):
-     try:
-          with open(filename, 'rb') as f:
-               return pickle.load(f)
-     except Exception:
-          return BloomFilter(size=1000, hash_count=5)
+        try:
+            with open(os.path.join('bloomfilter', filename), 'rb') as f:
+                return pickle.load(f)
+        except Exception:
+            return BloomFilter(size=1000, hash_count=5)
 
 # Example usage:
 bf = BloomFilter.load("password_bloom_filter.pkl")
