@@ -27,6 +27,18 @@ class Vault:
           else:
                self.inverse_index[item] = index
 
+     def remove_from_inverse_index(self, index):
+          keys = self.inverse_index.keys()
+          to_remove = []
+          for item in keys:
+               print(item)
+               if index in self.inverse_index[item]:
+                    if len(self.inverse_index[item]) == 1:
+                         to_remove.append(item)
+                    self.inverse_index[item].remove(index)
+          for item in to_remove:
+               del self.inverse_index[item]
+               
      def get_items_as_list(self):
           list = []
           count = 0
@@ -94,9 +106,13 @@ class Vault:
 
      def remove_item(self, url):
           try:
+               print("fails here")
                self.items.pop(url)
-               self.inverse_index.delete(url)
+               print("working 1")
+               self.remove_from_inverse_index(url)
+               print("working 2")
                self._save()
+               print("working 3")
           except Exception as e:
                print("error - invalid item")
 

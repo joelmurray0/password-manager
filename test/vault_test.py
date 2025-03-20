@@ -114,3 +114,9 @@ def test_inverse_index_exists_after_saving_and_loading():
      print(new_vault.inverse_index)
 
      assert vault.inverse_index == new_vault.inverse_index
+
+def test_remove_from_inverse_index():
+     vault = Vault.get_vault(name="vault", master_password="master_password")
+     vault.inverse_index = {"google": [1], "com": {1}}
+     vault.remove_from_inverse_index(1)
+     assert vault.inverse_index == {}

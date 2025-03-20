@@ -123,10 +123,14 @@ class CLIManager:
                password = self.spam.generate_password()
           else:
                password = input("Enter password: ")
-          if self.spam.add_item(url, username, password):
-               print("PASSWORD ADDED SUCCESSFULLY")
-          else:
+          while not self.spam.add_item(url, username, password):
                print("PASSWORD TOO WEAK TO BE ADDED")
+               if generated:
+                    password = self.spam.generate_password()
+               else:
+                    password = input("Enter password: ") 
+          else:
+               print("PASSWORD ADDED SUCCESSFULLY")
           self.user_state = "home"
 
      def list(self):
