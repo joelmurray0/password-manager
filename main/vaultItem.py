@@ -6,7 +6,6 @@ import base64
 class VaultItem:
      def __init__(self, master_password, url, username, password):
           self.url = url
-          self.id = os.urandom(16)
           self._put(master_password, url, username, password)
 
      def _put(self, master_password, url, username, password):

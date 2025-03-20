@@ -4,29 +4,59 @@ class Node:
         self.next = None
 
 class InverseIndex:
-     def __init__(self):
+     def __init__(self, arr = []):
           self.head = None
+          # self.create(arr)
+
+     # def create(self, arr):
+     #      if arr != []:
+     #           for i in arr:
+     #                self.add(i[0], i[1])
 
      def add(self, string, id):
-          data = [string, [id]]
+          data = [string, id]
           new_node = Node(data)
-          if not self.head or self.head.data[0] > data[0]:
+
+          if not self.head or self.head.data[0] > data[0]: # checks if first in the list
                new_node.next = self.head
                self.head = new_node
-               return
-          current = self.head
-          while current.next != None and current.data[0] < data[0]:
-               current = current.next
-          if current.next == None and current.data[0] > data[0]:
-               current.next = new_node
-               new_node.next = None
-          elif current.next == None and current.data[0] == data[0]:
-               temp = current.data[1]
-               temp.extend(data[1])
-               current.data[1] = list(set(temp))
           else:
-               new_node.next = current.next
-               current.next = new_node
+               current = self.head
+               while current.next != None and current.data[0] < data[0]:
+                    current = current.next
+               if current.next == None:
+                    current.next = new_node
+                    new_node.next = None
+               elif current.next.data[0] > data[0]:
+                    new_node.next = current.next
+                    current.next = new_node
+               else:
+                    temp = current.data[1]
+                    temp.extend(data[1])
+                    current.data[1] = list(set(temp))
+               
+                    
+                    
+     
+
+
+          # if not self.head or self.head.data[0] > data[0]:
+          #      new_node.next = self.head
+          #      self.head = new_node
+          #      return
+          # current = self.head
+          # while current.next != None and current.data[0] < data[0]:
+          #      current = current.next
+          # if current.next == None and current.data[0] > data[0]:
+          #      current.next = new_node
+          #      new_node.next = None
+          # elif current.next == None and current.data[0] == data[0]:
+          #      temp = current.data[1]
+          #      temp.extend(data[1])
+          #      current.data[1] = list(set(temp))
+          # else:
+          #      new_node.next = current.next
+          #      current.next = new_node
 
      def delete(self, id):
           temp = self.head
@@ -40,10 +70,10 @@ class InverseIndex:
                temp = temp.next
 
      def search(self, target):
-          found = False
           temp = self.head
-          while not found and temp != None:
+          while temp != None:
                if temp.data[0] == target:
+                    print(f" found {temp.data[0]}, result {temp.data[1]}")
                     return temp.data[1]
                temp = temp.next
 
@@ -53,9 +83,16 @@ class InverseIndex:
                print(current.data, end=" -> ")
                current = current.next
           print("None")
+     
+     # def save(self): # turns into 2d array to reconstruct linked list
+     #      arr = []
+     #      temp = self.head
+     #      while temp is not None:
+     #           arr.append(temp.data)
+     #           temp = temp.next
+     #      return arr
 
-
-x = InverseIndex()
+# x = InverseIndex()
 # x.add(["google", [1]])
 # x.add(["bing", [2]])
 # x.add(["a", [0]])
@@ -75,7 +112,15 @@ x = InverseIndex()
 # x.display()
 
 
+# inverse_index = InverseIndex()
+# inverse_index.add("stringa", 1)
+# inverse_index.add("stringb", 2)
+# inverse_index.display()
+
 inverse_index = InverseIndex()
-inverse_index.add("stringa", 1)
-inverse_index.add("stringb", 2)
+inverse_index.add("c", [1])
+inverse_index.add("e", [1])
+inverse_index.add("a", [1])
+# inverse_index.add("d", [1]) # middle
+# inverse_index.add("f", [1])
 inverse_index.display()
