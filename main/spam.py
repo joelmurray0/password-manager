@@ -12,8 +12,6 @@ class Spam:
      def __init__(self, name, master_password):
           self.vault = Vault.get_vault(name, master_password)
           self.bloom_filter = BloomFilter.load("password_bloom_filter")
-          print(self.bloom_filter.check_not_in("pussy"))
-          print(self.bloom_filter.check_not_in("callumisanonce"))
           if not self.vault:
                print("Failed to open vault")
                exit(1)

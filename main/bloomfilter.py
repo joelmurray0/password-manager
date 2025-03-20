@@ -33,17 +33,14 @@ class BloomFilter:
     
     @classmethod
     def load(cls, filename: str):
-        # print(os.path.exists(os.path.join("bloomfilter", f"{filename}.pkl")))
         if not os.path.exists(os.path.join("bloomfilter", f"{filename}.pkl")):
             # File doesn't exist, create a new BloomFilter with default values
             bloom_filter = cls(size=10000)
             # Optionally save this new filter to the file for future use
             # bloom_filter.save(filename)
         else:
-            print("file exists")
             with open(os.path.join('bloomfilter', f"{filename}.pkl"), 'rb') as f:
                 bloom_filter = pickle.load(f)
-                print(bloom_filter.bit_array)
             return bloom_filter
         return bloom_filter
 

@@ -43,13 +43,6 @@ class Vault:
           vault_item = self.items[url]
           return vault_item.get_username(self.master_password)
 
-     def view_all(self):
-          table = PrettyTable()
-          table.field_names = ["ID", "Username", "Url", "Password"]
-          for i in self.items:
-               table.add_row([i,self.items[i].get_username(self.master_password).decode(), self.items[i].url ,self.items[i].get_password(master_password).decode()])
-          print(table)
-
      @classmethod
      def get_vault(cls, name, master_password):
           try:
@@ -69,8 +62,6 @@ class Vault:
           return VaultItem(self.master_password, url, username, password)
 
      def get_item(self, url):
-          print(self.items)
-          print(url)
           try:
                return self.items[url]
           except Exception as e:
@@ -88,8 +79,6 @@ class Vault:
                id_list = self.inverse_index[query]
           except KeyError as e:
                return []
-          print('tt')
-          print(id_list)
           results = []
           if id_list != None:
                for i in range(len(id_list)):
@@ -100,7 +89,6 @@ class Vault:
      def build_search(self, vault_item):
           # tokens = generate_tokens(vault_item.get_username(self.master_password).decode(), vault_item.url)
           tokens = extract_url_parts(vault_item.url, vault_item.url)
-          # print(tokens)
           for i in tokens:
                self.add_to_inverse_index(i[0], i[1])
 

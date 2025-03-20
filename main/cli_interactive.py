@@ -1,4 +1,5 @@
 from prettytable import PrettyTable
+import pyperclip 
 
 class CLIManager:
      def __init__(self, spam):
@@ -38,7 +39,6 @@ class CLIManager:
      def search(self):
           query = input("Enter your search: ")
           results = self.spam.search(query)
-          print(results)
           if results == []:
                print("there are no matches to your query")
                self.user_state = "home"
@@ -83,8 +83,12 @@ class CLIManager:
      def show_item(self, url):
           table = PrettyTable()
           table.field_names = ["Username", "Url", "Password"]
-          table.add_row(self.spam.get_item(url))
+          row = self.spam.get_item(url)
+          table.add_row(row)
           print(table)
+          choice = self.input_with_validation("Do you want to copy to clipboard (y/n) ", ["y", "n"])
+          if choice == "y":
+               pyperclip.copy(row[2])
 
      def edit_item(self, url):
           print("What do you want to edit?")
@@ -92,9 +96,15 @@ class CLIManager:
           print("2. Password")
           print("3. Url")
           choice = self.input_with_validation("Choice: ", ["1", "2", "3"])
+          item = self.spam.get_item(url)
           if choice == "1":
-               print()
-          self.spam.edit_item()
+               item[0] = input("Enter your new username (enter r to return)")
+          elif choice == "2":
+               item[2] = input("Enter your new password (enter r to return)")
+          elif choice == "3":
+               item[1] = input("Enter new url (enter r to return)")
+          self.spam.remove_item(url)
+          self.spam.add_item(item[1], item[0], item[2])
 
      def remove_item(self, url):
           self.spam.remove_item(url)
