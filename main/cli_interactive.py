@@ -14,7 +14,7 @@ class CLIManager:
                elif self.user_state == "search":
                     self.search()
                elif self.user_state == "add":
-                    self.add()
+                    self.add_choice()
                elif self.user_state == "remove":
                     self.remove()
                elif self.user_state == "list":
@@ -38,29 +38,33 @@ class CLIManager:
      def search(self):
           query = input("Enter your search: ")
           results = self.spam.search(query)
+          print(results)
           if results == []:
                print("there are no matches to your query")
                self.user_state = "home"
           else:
-               table = PrettyTable()
-               table.field_names = ["Username", "Url", "Password"]
-               for i in results:
-                    table.add_row(i)
-               print(table)
                self.select_from_search(results)
      
      def select_from_search(self, results):
+          table = PrettyTable()
+          table.field_names = ["ID", "Url"]
+          for i in results:
+               table.add_row(i)
+          print(table)
           print("To select an item enter its ID")
           inputs = ["r"]
           for i in range(len(results)):
                inputs.append(str(i+1))
           choice = self.input_with_validation("Choose an option: ", inputs)
-          if choice == "r":
-               self.user_state = "home"
-          else:
-               self.current_item(results[int(choice) - 1])
+          self.user_state = "home"
+          if choice != "r":
+               table = PrettyTable()
+               table.field_names = ["ID", "Url"]
+               table.add_row(results[int(choice) - 1])
+               print(table)
+               self.current_item(results[int(choice) - 1][1], results)
 
-     def current_item(self, id):
+     def current_item(self, url, results):
           print("What do you want to do with this item (enter b to go back)?")
           print("1. View")
           print("2. Edit")
@@ -68,33 +72,52 @@ class CLIManager:
           choice = self.input_with_validation("Choose an option: ", ["1", "2", "3", "b"])
           if choice != "b":
                if choice == "1":
-                    self.show_item(id)
+                    self.show_item(url)
                elif choice == "2":
-                    self.edit_item(id)
+                    self.edit_item(url)
                else:
-                    self.remove_item(id)
+                    self.remove_item(url)
+          else:
+               self.select_from_search(results)
 
-     def show_item(self, id):
+     def show_item(self, url):
           table = PrettyTable()
-          table.field_names = ["ID", "Username", "Url", "Password"]
-          table.add_row(self.spam.get_item(id))
+          table.field_names = ["Username", "Url", "Password"]
+          table.add_row(self.spam.get_item(url))
           print(table)
 
-     def edit_item():
-          pass
+     def edit_item(self, url):
+          print("What do you want to edit?")
+          print("1. Username")
+          print("2. Password")
+          print("3. Url")
+          choice = self.input_with_validation("Choice: ", ["1", "2", "3"])
+          if choice == "1":
+               print()
+          self.spam.edit_item()
 
-     def remove_item():
-          pass
+     def remove_item(self, url):
+          self.spam.remove_item(url)
 
-     def add(self):
+     def add_choice(self):
+          choice = self.input_with_validation("Have generated password (y/n) ", ["y", "n"])
+          if choice == "y":
+               self.add(True)
+          else:
+               self.add(False)
+
+     def add(self, generated):
           url = input("Enter url: ")
           username = input("Enter username: ")
-          password = input("Enter password: ")
-          self.spam.add_item(url, username, password)
+          if generated:
+               password = self.spam.generate_password()
+          else:
+               password = input("Enter password: ")
+          if self.spam.add_item(url, username, password):
+               print("PASSWORD ADDED SUCCESSFULLY")
+          else:
+               print("PASSWORD TOO WEAK TO BE ADDED")
           self.user_state = "home"
-
-     def remove(self):
-          query = input("What password do you want to remove?")
 
      def list(self):
           items = self.spam.list_items()

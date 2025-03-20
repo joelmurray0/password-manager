@@ -86,4 +86,4 @@ def sha_256(bit_string):
      print(bit_string_512_chunks)
      print(len(padded_bit_string))
 
-sha_256("1010")
+#sha_256("1010")

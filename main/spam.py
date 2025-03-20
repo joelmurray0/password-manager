@@ -11,6 +11,9 @@ from cli_interactive import CLIManager
 class Spam:
      def __init__(self, name, master_password):
           self.vault = Vault.get_vault(name, master_password)
+          self.bloom_filter = BloomFilter.load("password_bloom_filter")
+          print(self.bloom_filter.check_not_in("pussy"))
+          print(self.bloom_filter.check_not_in("callumisanonce"))
           if not self.vault:
                print("Failed to open vault")
                exit(1)
@@ -18,13 +21,23 @@ class Spam:
      def list_items(self):
           return self.vault.get_items_as_list()
      
-     def get_item(self, id):
-          item = self.vault.get_item(id)
-          return [id, item.get_username(self._master_password), item.url, item.get_password(self._master_password)]
+     def remove_item(self, url):
+          self.vault.remove_item(url)
+     
+     def get_item(self, url):
+          return [self.vault.get_username(url).decode(), url, self.vault.get_password(url).decode()]
      
      def add_item(self, url, username, password):
-          self.vault.add_item(url, username, password)
+          if self.bloom_filter.check_not_in(password):
+               self.vault.add_item(url, username, password)
+               return True
+          return False
      
+     def generate_password(self):
+          password = make_password()
+          if self.bloom_filter.check_not_in(password):
+               return make_password()
+
      def search(self, query):
           return self.vault.search(query)
 

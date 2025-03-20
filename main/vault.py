@@ -2,10 +2,10 @@ import os
 import pickle
 
 from binarysearcharr2d import binary_search_arr2d
-from utilities.tokeniser import generate_tokens
+from utilities.tokeniser import extract_url_parts
 from prettytable import PrettyTable
 
-from inverseIndex import InverseIndex
+# from inverseIndex import InverseIndex
 from vaultItem import VaultItem
 
 from utilities.encryption import aes_decrypt_data, aes_encrypt_data, hash
@@ -17,12 +17,22 @@ class Vault:
           self.master_password = master_password
           self.items = {}
           self.check = aes_encrypt_data(derive_key(master_password.encode(), name), b"valid", hash(name.encode()))
-          self.inverse_index = InverseIndex()
+          self.inverse_index = {}
+
+     def add_to_inverse_index(self, item, index):
+          if item in self.inverse_index:
+               temp = self.inverse_index[item]
+               temp.extend(index)
+               self.inverse_index[item] = list(set(temp))
+          else:
+               self.inverse_index[item] = index
 
      def get_items_as_list(self):
           list = []
+          count = 0
           for i in self.items:
-               list.append((self.items[i].id, self.items[i].url))
+               count += 1
+               list.append((count, self.items[i].url))
           return list
 
      def get_password(self, url):
@@ -58,11 +68,11 @@ class Vault:
      def _get_vault_item(self, url, username, password):
           return VaultItem(self.master_password, url, username, password)
 
-     def get_item(self, id):
+     def get_item(self, url):
           print(self.items)
-          print(id)
+          print(url)
           try:
-               return self.items[id]
+               return self.items[url]
           except Exception as e:
                return False
 
@@ -74,22 +84,25 @@ class Vault:
           self._save()
      
      def search(self, query):
-          id_list = self.inverse_index.search(query)
+          try:
+               id_list = self.inverse_index[query]
+          except KeyError as e:
+               return []
           print('tt')
           print(id_list)
           results = []
           if id_list != None:
                for i in range(len(id_list)):
                     item = self.get_item(id_list[i])
-                    results.append((item.get_username(self.master_password), item.url, item.get_password(self.master_password)))
+                    results.append((i+1, item.url))
           return results
 
      def build_search(self, vault_item):
-          tokens = generate_tokens(vault_item.get_username(self.master_password).decode(), vault_item.url)
-          tokens.extend(generate_tokens(vault_item.url, vault_item.url))
-          print(tokens)
+          # tokens = generate_tokens(vault_item.get_username(self.master_password).decode(), vault_item.url)
+          tokens = extract_url_parts(vault_item.url, vault_item.url)
+          # print(tokens)
           for i in tokens:
-               self.inverse_index.add(i[0], i[1])
+               self.add_to_inverse_index(i[0], i[1])
 
      def remove_item(self, url):
           try:

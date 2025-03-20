@@ -65,50 +65,52 @@ def test_get_vault_can_also_load_pre_existing_vaults():
      vault.add_item("url", "username", "password")
      vault._save()
 
-     with open(os.path.join('vault', "vault.txt"), "rb") as file:
+     with open(os.path.join('vault', "vault.spam"), "rb") as file:
           content = file.read()
           assert isinstance(content, bytes)
           assert len(content) != 0
      vault = Vault.get_vault(name="vault", master_password="master_password")
 
-     assert list(vault.items.keys())[-1] == id # last element as previous tests take up other ids that aren't removed
+     assert list(vault.items.keys())[-1] == "url" # last element as previous tests take up other ids that aren't removed
 
 def test_build_search():
-     vault = Vault.get_vault(name="vault", master_password="master_password")
-     
+     vault = Vault.get_vault(name="vault", master_password="master_password") 
+     vault_item = VaultItem("master_password", "url", "username", "password")
 
      vault.build_search(vault_item)
 
 def test_get_item_with_id():
      vault = Vault.get_vault(name="vault", master_password="master_password")
-     
+     vault_item = VaultItem("master_password", "url", "username", "password")
 
      vault.add_item("url", "username", "password")
 
-     new_vault_item = vault.get_item(vault_item.id)
+     new_vault_item = vault.get_item("url")
 
      assert vault_item.url == new_vault_item.url
      assert vault_item.get_password("master_password") == new_vault_item.get_password("master_password")
      assert vault_item.get_username("master_password") == new_vault_item.get_username("master_password")
-     assert vault_item.id == new_vault_item.id
 
 def test_inverse_index_exists_after_saving_and_loading():
      vault = Vault.get_vault(name="vault", master_password="master_password")
-     
 
      vault.add_item("url", "username", "password")
 
-     vault.inverse_index.display()
-     print(vault.inverse_index.head)
+     #print(vault.inverse_index.head)
+     print()
      vault._save()
-
+     print()
      new_vault = Vault.get_vault(name="vault", master_password="master_password")
      #assert vault.inverse_index.display() == new_vault.inverse_index.display()
 
      # new_vault.inverse_index.display()
      # print(new_vault.inverse_index.head)
-     print(new_vault.inverse_index.search("vsername"))#
+     #print(new_vault.inverse_index.search("vsername"))#
      # print(new_vault.inverse_index.head)
      #print(b's\x10\x80\x84\xfcW/PgUe\xa7\x14aK\xae')
+     print("first")
+     print(vault.inverse_index)
+     print("second")
+     print(new_vault.inverse_index)
 
-     assert vault.inverse_index is new_vault.inverse_index
+     assert vault.inverse_index == new_vault.inverse_index

@@ -1,6 +1,58 @@
 import string
 from nltk.util import ngrams
+from urllib.parse import urlparse
 #from fuzzy import Soundex
+
+import tldextract
+from urllib.parse import urlparse, parse_qs
+
+def extract_url_parts(url, id):
+
+     if "://" not in url:
+          url = "https://" + url
+     result = []    
+     # Parse the URL
+     parsed = urlparse(url)
+     
+     # Extract domain parts
+     extracted = tldextract.extract(parsed.netloc)
+     # print(tldextract.extract(parsed.netloc))
+     # print(extracted.subdomain.split("."))
+     
+     # Remove "www" if present in subdomain
+     subdomains = [part for part in extracted.subdomain.split(".") if part and part != "www"]
+     
+     whole = subdomains
+     whole.append(extracted.domain)
+     whole.append(extracted.suffix)
+     # Construct full domain
+     domain_no_www = ".".join(filter(None, whole))
+
+     domain_no_subdomain = ".".join(filter(None, [extracted.domain, extracted.suffix]))
+
+     # Extract path parts, removing empty strings
+     path_parts = [part for part in parsed.path.split("/") if part]
+
+     query_params = parse_qs(parsed.query)
+    
+     # print(domain_no_www)
+     # print(subdomains)
+     # print(query_params)
+     # print(path_parts)
+
+     result.append([extracted.domain, [id]])
+     if domain_no_www != domain_no_subdomain:
+          result.append([domain_no_www, [id]])
+     result.append([domain_no_subdomain, [id]])
+     for subs in subdomains:
+          result.append([subs, [id]])
+     if len(path_parts) != 0:
+          for part in path_parts:
+               result.append([part, [id]])
+     if "q" in query_params:
+          result.append([query_params["q"], [id]])
+
+     return result
 
 def generate_tokens(word, id, n_min=2, n_max=6):
      result = generate_fuzzy_deletions(word)
@@ -11,6 +63,17 @@ def generate_tokens(word, id, n_min=2, n_max=6):
      for i in range(len(result)):
           result[i] = [result[i], id]
      return result
+
+def generate_url_parse(url, id):
+     parsed_url = urlparse(url)
+     token = []
+     for section in parsed_url:
+          if section != None and section != "":
+               token.append([section, [id]])
+     return token
+     
+     token.append([parsed_url.hostname, [id]])
+     token.append([parsed_url.hostname, [id]])
 
 def generate_fuzzy_insertions(word):
      letters = string.ascii_lowercase
