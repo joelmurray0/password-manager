@@ -93,7 +93,6 @@ class Vault:
           results = []
           if id_list != None:
                for i in range(len(id_list)):
-                    print(id_list[i])
                     item = self.get_item(id_list[i])
                     results.append((i+1, item.url))
           return results
