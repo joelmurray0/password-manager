@@ -1,9 +1,6 @@
-import argparse
 import getpass
-import os
 import sys
 from vault import Vault
-from vaultItem import VaultItem
 from utilities.generatepassword import make_password
 from bloomfilter import BloomFilter
 from cli_interactive import CLIManager
@@ -13,8 +10,9 @@ class Spam:
           self.vault = Vault.get_vault(name, master_password)
           self.bloom_filter = BloomFilter.load("password_bloom_filter")
           if not self.vault:
-               print("Failed to open vault")
+               print("\033[1;31mFailed to open vault.\033[0m")
                exit(1)
+          print("\033[33mLogin successful.\033[0m")
 
      def list_items(self):
           return self.vault.get_items_as_list()
@@ -41,11 +39,15 @@ class Spam:
 
 if __name__ == "__main__":
      #vault = Vault.get_vault("vault", "")
-     name = sys.argv[1]
-     if name:
-          spam = Spam(name, getpass.getpass("Enter the master password: "))
-          interface = CLIManager(spam)
-          interface.run()
+     try:
+          name = sys.argv[1]
+          if name:
+               spam = Spam(name, getpass.getpass(f"\033[33mWelcome to SPaM, {name}.\033[0m \033[1;32mYou will now need to enter your master password.\033[0m\n\033[37mIf this is your first time opening the vault then the master password will be assigned here. \nThis input will remain hidden for user privacy. \033[0m \n"))
+               interface = CLIManager(spam)
+               interface.run()
+     except IndexError:
+          print("\033[33m--HELP MESSAGE-- \nTo use this application run:\033[0m \033[32mpython spam.py <vault name>\033[0m \n\033[33mFor example: python spam.py John\033[0m")
+
 
 
 

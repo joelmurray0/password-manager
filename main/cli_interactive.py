@@ -8,7 +8,8 @@ class CLIManager:
      def run(self):
           running = True
           self.user_state = "home"
-          print("") # more fancy to be added
+          print()
+          print("\033[1;33mAlways input the numbers in the boxes to select an option.\033[0m") # more fancy to be added
           while running:
                if self.user_state == "home":
                     self.home_screen()
@@ -40,7 +41,7 @@ class CLIManager:
           query = input("Enter your search: ")
           results = self.spam.search(query)
           if results == []:
-               print("there are no matches to your query")
+               print("There are no matches to your query.")
                self.user_state = "home"
           else:
                self.select_from_search(results)
@@ -65,12 +66,12 @@ class CLIManager:
                self.current_item(results[int(choice) - 1][1], results)
 
      def current_item(self, url, results):
-          print("What do you want to do with this item (enter b to go back)?")
+          print("What do you want to do with this item (enter r to return)?")
           print("1. View")
           print("2. Edit")
           print("3. Remove")
-          choice = self.input_with_validation("Choose an option: ", ["1", "2", "3", "b"])
-          if choice != "b":
+          choice = self.input_with_validation("Choose an option: ", ["1", "2", "3", "r"])
+          if choice != "r":
                if choice == "1":
                     self.show_item(url)
                elif choice == "2":
@@ -92,22 +93,23 @@ class CLIManager:
 
      def edit_item(self, url):
           print("What do you want to edit?")
-          print("1. Username")
-          print("2. Password")
-          print("3. Url")
+          print("[1] Username")
+          print("[2] Password")
+          print("[3] Url")
           choice = self.input_with_validation("Choice: ", ["1", "2", "3"])
           item = self.spam.get_item(url)
           if choice == "1":
-               item[0] = input("Enter your new username (enter r to return)")
+               item[0] = input("Enter your new username")
           elif choice == "2":
-               item[2] = input("Enter your new password (enter r to return)")
+               item[2] = input("Enter your new password")
           elif choice == "3":
-               item[1] = input("Enter new url (enter r to return)")
+               item[1] = input("Enter new url")
           self.spam.remove_item(url)
           self.spam.add_item(item[1], item[0], item[2])
 
      def remove_item(self, url):
           self.spam.remove_item(url)
+          print("Item removed!")
 
      def add_choice(self):
           choice = self.input_with_validation("Have generated password (y/n) ", ["y", "n"])
@@ -124,17 +126,18 @@ class CLIManager:
           else:
                password = input("Enter password: ")
           while not self.spam.add_item(url, username, password):
-               print("PASSWORD TOO WEAK TO BE ADDED")
+               print("\033[1;31mPASSWORD TOO WEAK TO BE ADDED\033[0m")
                if generated:
                     password = self.spam.generate_password()
                else:
                     password = input("Enter password: ") 
           else:
-               print("PASSWORD ADDED SUCCESSFULLY")
+               print("\033[1;31mPASSWORD ADDED SUCCESSFULLY\033[0m")
           self.user_state = "home"
 
      def list(self):
           items = self.spam.list_items()
+          print("List of all items in the vault")
           table = PrettyTable()
           table.field_names = ["ID", "Url"]
           for i in items:
@@ -143,10 +146,10 @@ class CLIManager:
           self.user_state = "home"
 
      def home_screen(self):
-          print("1. Search Items")
-          print("2. List Items")
-          print("3. Add Items")
-          print("q. Exit")
+          print("[1] Search Items")
+          print("[2] List Items")
+          print("[3] Add Items")
+          print("[q] Exit")
           choice = self.input_with_validation("Choose an option: ", ["1", "2", "3", "q"])
           if choice == "1":
                self.user_state = "search"
@@ -160,7 +163,7 @@ class CLIManager:
      def input_with_validation(self, input_: str, expected_results: list):
           result = input(input_)
           while result not in expected_results:
-               print(f"invalid input please try again - {expected_results}")
+               print(f"Invalid input please try again - {expected_results}")
                result = input(input_)
           return result
      
