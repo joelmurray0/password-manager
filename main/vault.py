@@ -1,14 +1,10 @@
 import os
 import pickle
 
-from binarysearcharr2d import binary_search_arr2d
 from utilities.tokeniser import extract_url_parts, generate_tokens
-from prettytable import PrettyTable
-
-# from inverseIndex import InverseIndex
 from vaultItem import VaultItem
 
-from utilities.encryption import aes_decrypt_data, aes_encrypt_data, hash
+from utilities.encryption import aes_encrypt_data, hash
 from utilities.key import derive_key
 
 class Vault:

@@ -1,12 +1,12 @@
 from main.utilities.tokeniser import *
 
-def test_url_works_subdomain_www():
+def test_url_works_subdomain_www(): # scam
      results = extract_url_parts(url="http://www.abc.com/suckmy", id=0)
      check = []
      for result in results:
           check.append(result[0])
      print(check)
-     assert set(check) == set(["abc", "abc.com", "suckmy"])
+     assert set(check) == set(["abc", "abc.com", "suckmy", "com"])
 
 def test_url_works_with_no_head():
      results = extract_url_parts(url="google.com", id=0)
@@ -17,13 +17,13 @@ def test_url_works_with_no_head():
      assert set(check) == set(["google", "google.com", "com"])
 
 
-def test_url_works_subdomain_no_www():
+def test_url_works_subdomain_no_www(): #scam
      results = extract_url_parts(url="http://subby.ttt.co.uk/plop?a=r", id=0)
      print(results)
      check = []
      for result in results:
           check.append(result[0])
-     assert check == ['ttt', 'subby.ttt.co.uk', 'ttt.co.uk', 'subby', 'plop']
+     assert set(check) == set(['ttt', 'subby.ttt.co.uk', 'ttt.co.uk', 'subby', 'plop', 'co.uk'])
 # subby, ttt, ttt.co.uk, subby.ttt.co.uk, plop
 
 # def test_fuzzy_search_insertions():

@@ -132,7 +132,7 @@ class CLIManager:
                else:
                     password = input("Enter password: ") 
           else:
-               print("\033[1;32mPASSWORD ADDED SUCCESSFULLY\033[0m")
+               print("\033[1;3mPASSWORD ADDED SUCCESSFULLY\033[0m")
           self.user_state = "home"
 
      def list(self):

@@ -3,7 +3,7 @@ import sys
 from vault import Vault
 from utilities.generatepassword import make_password
 from bloomfilter import BloomFilter
-from cli_interactive import CLIManager
+from cli_manager import CLIManager
 
 class Spam:
      def __init__(self, name, master_password):
